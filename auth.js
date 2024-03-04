@@ -23,14 +23,23 @@ export const {
     },
   },
   callbacks: {
-    // async signIn({user}) {
-    //     const existingUser = await getUserById(user.id);
+    async signIn({ user, account }) {
+      //Allow oauth with email verification
+      if (account?.provider !== "credentials") {
+        return true;
+      }
 
-    //     if (!existingUser || !existingUser.emailVerified) {
-    //         // Don't allow sign in
-    //         return false;
-    //     }
-    // },
+      const existingUser = await getUserById(user.id);
+
+      if (!existingUser?.emailVerified) {
+        // Don't allow sign in
+        return false;
+      }
+
+      // add 2fa
+
+      return true;
+    },
     async session({ token, session }) {
       console.log({ sessionToken: token });
       if (token.sub && session.user) {
